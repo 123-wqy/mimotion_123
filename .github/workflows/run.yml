@@ -2,7 +2,8 @@ name: 刷步数
 
 on:
   schedule:
-    - cron: '28 0,2,4,6,8,10 * * *'
+    # UTC 04:00 / 10:00 = Asia/Shanghai 12:00 / 18:00
+    - cron: '0 4,10 * * *'
   workflow_dispatch:
 
 jobs:
@@ -10,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
+      - name: Random delay for scheduled runs
+        if: github.event_name == 'schedule'
+        shell: bash
+        run: |
+          delay=$((RANDOM % 901))
+          echo "Waiting ${delay} seconds before the scheduled run"
+          sleep "$delay"
       - name: Checkout codes
         uses: actions/checkout@v5
         with:
